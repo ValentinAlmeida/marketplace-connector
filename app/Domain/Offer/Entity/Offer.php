@@ -14,7 +14,7 @@ final class Offer extends AbstractEntity
 {
     private OfferProperties $props;
 
-    private function __construct(Identifier $id, OfferProperties $props)
+    private function __construct(OfferProperties $props, ?Identifier $id = null)
     {
         parent::__construct($id);
         $this->props = $props;
@@ -37,10 +37,10 @@ final class Offer extends AbstractEntity
             updatedAt: $now
         );
 
-        return new self(new Identifier(null), $props);
+        return new self($props);
     }
 
-    public static function restore(OfferRestoreDto $dto, Identifier $id): self
+    public static function restore(OfferRestoreDto $dto, int $id): self
     {
         $props = new OfferProperties(
             reference: $dto->reference,
@@ -55,7 +55,7 @@ final class Offer extends AbstractEntity
             updatedAt: $dto->updatedAt
         );
 
-        return new self($id, $props);
+        return new self($props, Identifier::create($id));
     }
 
     public function getProps(): OfferProperties

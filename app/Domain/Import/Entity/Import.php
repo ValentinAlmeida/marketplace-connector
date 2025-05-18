@@ -14,7 +14,7 @@ final class Import extends AbstractEntity
 {
     private ImportProperties $props;
 
-    private function __construct(Identifier $id, ImportProperties $props)
+    private function __construct(ImportProperties $props, ?Identifier $id = null)
     {
         parent::__construct($id);
         $this->props = $props;
@@ -39,10 +39,10 @@ final class Import extends AbstractEntity
             deletedAt: null
         );
 
-        return new self(new Identifier(null), $props);
+        return new self($props);
     }
 
-    public static function restore(ImportRestoreDto $dto, Identifier $id): self
+    public static function restore(ImportRestoreDto $dto, int $id): self
     {
         $props = new ImportProperties(
             status: $dto->status,
@@ -59,7 +59,7 @@ final class Import extends AbstractEntity
             deletedAt: $dto->deletedAt
         );
 
-        return new self($id, $props);
+        return new self($props, Identifier::create($id));
     }
 
     public function getProps(): ImportProperties

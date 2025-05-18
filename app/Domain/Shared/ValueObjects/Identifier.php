@@ -4,7 +4,7 @@ namespace App\Domain\Shared\ValueObjects;
 
 final class Identifier
 {
-    public function __construct(
+    private function __construct(
         private readonly mixed $value
     ) {
         $this->validate();
@@ -20,6 +20,11 @@ final class Identifier
     public function value(): mixed
     {
         return $this->value;
+    }
+
+    public static function create(string $value): static
+    {
+        return new static($value);
     }
 
     public function equals(self $other): bool
