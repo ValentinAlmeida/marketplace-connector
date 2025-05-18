@@ -1,0 +1,39 @@
+FROM php:8.3-apache
+
+LABEL authors="valentinfalmeid@gmail.com"
+
+ENV DB_CONNECTION=pgsql
+
+RUN apt-get update && apt-get install -y \
+    git \
+    libcurl4 \
+    libcurl4-openssl-dev \
+    libzip-dev \
+    unzip \
+    libsodium-dev \
+    libonig-dev \
+    libpq-dev \
+    libxml2-dev \
+    libxslt1-dev \
+    libpng-dev \
+    libmagic-dev \
+    libldap2-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN docker-php-ext-configure zip --with-zip \
+    && docker-php-ext-install curl zip sodium pgsql pdo_pgsql xml xsl gd mbstring ctype fileinfo
+
+RUN php -r "copy('https://getcomposer.org/installer', '/tmp/composer-setup.php');" \
+	&& php /tmp/composer-setup.php --install-dir=/usr/bin --filename=composer
+
+RUN cp /usr/local/etc/php/php.ini-development /usr/local/etc/php/php.ini \
+    && echo "upload_max_filesize = 12M" >> /usr/local/etc/php/php.ini \
+    && echo "post_max_size = 12M" >> /usr/local/etc/php/php.ini
+
+WORKDIR /application
+
+ADD . .
+
+RUN chmod 777 -R bootstrap storage public
+
+EXPOSE 8000
