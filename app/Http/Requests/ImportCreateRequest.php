@@ -18,7 +18,7 @@ class ImportCreateRequest extends FormRequest
     {
         return [
             'description' => ['nullable', 'string', 'max:255'],
-            'scheduled_at' => ['required', 'date_format:' . Format::SCHEDULE, 'after_or_equal:now']
+            'scheduled_at' => ['required', 'date_format:' . Format::DATE_TIME, 'after_or_equal:now']
         ];
     }
 
@@ -27,7 +27,7 @@ class ImportCreateRequest extends FormRequest
         return new ImportCreateDto(
             description: $this->input('description'),
             scheduledAt: $this->filled('scheduled_at') 
-                ? Carbon::createFromFormat(Format::SCHEDULE, $this->input('scheduled_at'))
+                ? Carbon::createFromFormat(Format::DATE_TIME, $this->input('scheduled_at'))
                 : null
         );
     }

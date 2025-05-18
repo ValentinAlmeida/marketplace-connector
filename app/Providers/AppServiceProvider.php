@@ -3,10 +3,10 @@
 namespace App\Providers;
 
 use App\Constants\Format;
+use App\Domain\Import\Repositories\EloquentImportRepository;
 use App\Domain\Import\Repositories\ImportRepositoryInterface;
 use App\Domain\Import\Services\ImportServiceInterface;
 use App\Http\Serializers\ImportSerializer;
-use App\Infrastructure\Repositories\EloquentImportRepository;
 use App\Domain\Import\Services\ImportService;
 use Illuminate\Support\ServiceProvider;
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Infrastructure\Repositories;
+namespace App\Domain\Import\Repositories;
 
 use App\Domain\Import\Adapters\ImportAdapter;
 use App\Domain\Import\Entity\Import;
