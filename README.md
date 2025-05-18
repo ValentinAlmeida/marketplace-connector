@@ -55,4 +55,19 @@ docker network connect marketplace-network marketplace-connector
 
 ---
 
+
+## 🌐 6. Crie o container do Redis
+
+Crie o container do Redis na rede da api. 🚦
+
+```bash
+docker run -d --name redis \
+  --network marketplace-network \
+  -p 6379:6379 \
+  -v redis_data:/data \
+  redis:alpine
+```
+
+---
+
 🎉 **Pronto!** Seu ambiente Docker está configurado e funcionando. Agora é só codar e brilhar! 💻✨
