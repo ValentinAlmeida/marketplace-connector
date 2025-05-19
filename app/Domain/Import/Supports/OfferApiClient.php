@@ -10,11 +10,13 @@ class OfferApiClient
 {
     public function fetchOffers(int $page, int $perPage): array
     {
-        $response = Http::retry(3, 100)
-            ->get('http://localhost:3000/offers', [
-                'page' => $page,
-                'per_page' => $perPage
-            ]);
+        $baseUrl = env('IMPORTER_URL', 'http://localhost');
+        $endpoint = "{$baseUrl}:3000/offers";
+
+        $response = Http::get($endpoint, [
+            'page' => $page,
+            'per_page' => $perPage,
+        ]);
 
         if (!$response->successful()) {
             throw new \RuntimeException(

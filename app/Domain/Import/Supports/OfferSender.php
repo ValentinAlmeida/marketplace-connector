@@ -42,13 +42,15 @@ class OfferSender
     public function send(array $offer, int $index): bool
     {
         try {
-            $response = Http::timeout(30)
-                ->post('http://localhost:3000/hub/create-offer', [
-                    'title' => $offer['title'],
-                    'description' => $offer['description'],
-                    'status' => $offer['status'],
-                    'stock' => (int)$offer['stock']
-                ]);
+            $baseUrl = env('IMPORTER_URL', 'http://localhost');
+            $endpoint = "{$baseUrl}:3000/hub/create-offer";
+
+            $response = Http::timeout(30)->post($endpoint, [
+                'title' => $offer['title'],
+                'description' => $offer['description'],
+                'status' => $offer['status'],
+                'stock' => (int)$offer['stock'],
+            ]);
 
             if (!$response->successful()) {
                 Log::error('OfferSender::send - Falha no envio da oferta', [

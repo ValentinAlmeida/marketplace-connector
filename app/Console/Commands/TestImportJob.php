@@ -57,7 +57,7 @@ class TestImportJob extends Command
             dispatch_sync($job);
         } else {
             $this->info("Dispachando para a fila...");
-            dispatch($job)->onQueue('imports');
+            dispatch($job);
         }
 
         $this->info("Job disparado! Monitorando logs...");
