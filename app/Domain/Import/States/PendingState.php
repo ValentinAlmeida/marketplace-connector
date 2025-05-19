@@ -4,12 +4,14 @@ namespace App\Domain\Import\States;
 
 use App\Domain\Import\Entity\Import;
 use App\Domain\Import\Enums\ImportStatus;
+use Carbon\Carbon;
 
 class PendingState implements ImportState
 {
     public function startProcessing(Import $import): void
     {
         $import->changeState(new ProcessingState());
+        $import->setStartedAt(Carbon::now());
     }
 
     public function complete(Import $import): void

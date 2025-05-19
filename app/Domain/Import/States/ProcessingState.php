@@ -4,6 +4,7 @@ namespace App\Domain\Import\States;
 
 use App\Domain\Import\Entity\Import;
 use App\Domain\Import\Enums\ImportStatus;
+use Carbon\Carbon;
 
 class ProcessingState implements ImportState
 {
@@ -15,6 +16,7 @@ class ProcessingState implements ImportState
     public function complete(Import $import): void
     {
         $import->changeState(new CompletedState());
+        $import->setCompletedAt(Carbon::now());
     }
 
     public function fail(Import $import, string $error): void

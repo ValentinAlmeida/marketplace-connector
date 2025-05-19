@@ -21,7 +21,7 @@ class ImportService implements ImportServiceInterface
         return App::make(UnitOfWorkInterface::class)->run(function() use ($dto) {
             $import = Import::create($dto);
             $savedImport = $this->repository->create($import);
-            $this->dispatchImportJob($savedImport);
+            // $this->dispatchImportJob($savedImport);
             return $savedImport;
         });
     }
@@ -36,10 +36,10 @@ class ImportService implements ImportServiceInterface
         return $this->repository->findById($id);
     }
 
-    private function dispatchImportJob(Import $import): void
-    {
-        ProcessImportJob::dispatch($import->getIdentifier())
-            ->onQueue('imports')
-            ->delay($import->getProps()->scheduledAt);
-    }
+    // private function dispatchImportJob(Import $import): void
+    // {
+    //     ProcessImportJob::dispatch($import->getIdentifier())
+    //         ->onQueue('imports')
+    //         ->delay($import->getProps()->scheduledAt);
+    // }
 }

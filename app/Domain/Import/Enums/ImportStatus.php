@@ -30,4 +30,9 @@ enum ImportStatus: string
             ],
         };
     }
+
+    public function isFailed(): bool
+    {
+        return $this === self::FAILED;
+    }
 }

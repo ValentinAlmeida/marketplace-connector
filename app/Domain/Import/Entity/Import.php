@@ -87,6 +87,16 @@ final class Import extends AbstractEntity
         );
     }
 
+    public function setStartedAt(Carbon $startedAt)
+    {
+        $this->props->startedAt = $startedAt;
+    }
+
+    public function setCompletedAt(Carbon $completedAt)
+    {
+        $this->props->completedAt = $completedAt;
+    }
+
     public function startProcessing(): void
     {
         $this->state->startProcessing($this);
