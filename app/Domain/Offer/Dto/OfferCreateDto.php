@@ -10,6 +10,8 @@ final class OfferCreateDto
         public readonly Reference $reference,
         public readonly string $title,
         public readonly string $description,
+        public readonly string $status,
+        public readonly array $images,
         public readonly int $stock,
         public readonly float $price
     ) {}

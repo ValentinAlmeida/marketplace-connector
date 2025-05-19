@@ -17,8 +17,7 @@ return new class extends Migration
             $table->string('status');
             $table->integer('stock');
             $table->decimal('price', 10, 2)->nullable();
-            $table->json('images')->nullable();
-            $table->json('price_history')->nullable();
+            //adicionar isso em outra tabela $table->json('images')->nullable();
             $table->timestamps();
         });
     }

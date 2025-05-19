@@ -1,0 +1,41 @@
+<?php
+
+namespace App\Domain\Import\Services;
+
+use Illuminate\Support\Facades\Http;
+
+class PaginatedOfferFetcher
+{
+    protected string $baseUrl;
+
+    public function __construct(string $baseUrl)
+    {
+        $this->baseUrl = $baseUrl;
+    }
+
+    public function fetch(): array
+    {
+        $page = 1;
+        $lastPage = null;
+        $offerIds = [];
+
+        while (is_null($lastPage) || $page <= $lastPage) {
+            $response = Http::retry(3, 100)->get($this->baseUrl, ['page' => $page]);
+
+            if (!$response->successful()) {
+                return [];
+            }
+
+            $data = $response->json();
+
+            if (is_null($lastPage)) {
+                $lastPage = $data['pagination']['total_pages'];
+            }
+
+            $offerIds = array_merge($offerIds, $data['data']['offers']);
+            $page++;
+        }
+
+        return $offerIds;
+    }
+}

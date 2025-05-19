@@ -4,7 +4,6 @@ namespace App\Domain\Offer\Entity;
 
 use App\Domain\Offer\Dto\OfferCreateDto;
 use App\Domain\Offer\Dto\OfferRestoreDto;
-use App\Domain\Offer\Enums\OfferStatus;
 use App\Domain\Offer\Properties\OfferProperties;
 use App\Domain\Shared\Entity\AbstractEntity;
 use App\Domain\Shared\ValueObjects\Identifier;
@@ -28,11 +27,10 @@ final class Offer extends AbstractEntity
             reference: $dto->reference,
             title: $dto->title,
             description: $dto->description,
-            status: OfferStatus::ACTIVE,
+            status: $dto->status,
             stock: $dto->stock,
             price: $dto->price,
-            images: null,
-            priceHistory: null,
+            images: $dto->images,
             createdAt: $now,
             updatedAt: $now
         );
@@ -50,7 +48,6 @@ final class Offer extends AbstractEntity
             stock: $dto->stock,
             price: $dto->price,
             images: $dto->images,
-            priceHistory: $dto->priceHistory,
             createdAt: $dto->createdAt,
             updatedAt: $dto->updatedAt
         );
@@ -61,10 +58,5 @@ final class Offer extends AbstractEntity
     public function getProps(): OfferProperties
     {
         return $this->props;
-    }
-
-    public function getStatusDescription(): string
-    {
-        return $this->props->status->withMeta()['description'];
     }
 }

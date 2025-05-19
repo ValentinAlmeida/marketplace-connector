@@ -16,7 +16,6 @@ class ProcessingState implements ImportState
     public function complete(Import $import): void
     {
         $import->changeState(new CompletedState());
-        $import->setCompletedAt(Carbon::now());
     }
 
     public function fail(Import $import, string $error): void
