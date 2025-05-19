@@ -1,6 +1,8 @@
 # Constantes
 SERVER=marketplace-connector
 DATABASE=db-marketplace
+REDIS=redis
+BEAUTIFUL_CERF=beautiful_cerf
 
 .PHONY: help test start serve queue stop restart cache migration migrationf seed-generate fresh migrate rollback seed key-generate create-users
 
@@ -61,10 +63,12 @@ seed:
 	fi
 
 start:
-	@echo "Starting backend server..."
+	@echo "Starting backend server and services..."
 	@if [ ! -z "$(SERVER)" ]; then \
 		docker stop $(SERVER); \
 		docker start $(DATABASE); \
+		docker start $(REDIS); \
+		docker start $(BEAUTIFUL_CERF); \
 		docker start $(SERVER); \
 		make serve; \
 	fi
@@ -82,9 +86,11 @@ key-generate:
 	fi
 
 stop:
-	@echo "Stopping all servers..."
+	@echo "Stopping all servers and services..."
 	@if [ ! -z "$(SERVER)" ]; then docker stop $(SERVER); fi
 	@if [ ! -z "$(DATABASE)" ]; then docker stop $(DATABASE); fi
+	@if [ ! -z "$(REDIS)" ]; then docker stop $(REDIS); fi
+	@if [ ! -z "$(BEAUTIFUL_CERF)" ]; then docker stop $(BEAUTIFUL_CERF); fi
 
 cache:
 	@echo "Clearing and caching configuration..."

@@ -2,8 +2,8 @@
 
 namespace App\Domain\Import\Services;
 
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
+use App\Domain\Import\Supports\ErrorHandler;
+use App\Domain\Import\Supports\OfferApiClient;
 
 class MarketplaceService
 {
@@ -52,47 +52,5 @@ class MarketplaceService
         } while ($retryCount < self::MAX_RETRIES);
 
         return [];
-    }
-}
-
-class OfferApiClient
-{
-    public function fetchOffers(int $page, int $perPage): array
-    {
-        $response = Http::retry(3, 100)
-            ->get('http://localhost:3000/offers', [
-                'page' => $page,
-                'per_page' => $perPage
-            ]);
-
-        if (!$response->successful()) {
-            throw new \RuntimeException(
-                "API request failed with status: " . $response->status()
-            );
-        }
-
-        $data = $response->json();
-        
-        if (!isset($data['data'])) {
-            Log::warning('OfferApiClient::fetchOffers - Resposta da API não contém campo "data"', [
-                'response' => $data
-            ]);
-            return [];
-        }
-
-        return $data['data'];
-    }
-}
-
-class ErrorHandler
-{
-    public function logAndThrow(string $message, \Throwable $e, array $context = []): void
-    {
-        Log::error('ErrorHandler::logAndThrow - ' . $message, array_merge($context, [
-            'error' => $e->getMessage(),
-            'trace' => $e->getTraceAsString()
-        ]));
-        
-        throw $e;
     }
 }

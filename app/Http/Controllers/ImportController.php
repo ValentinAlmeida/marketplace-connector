@@ -20,9 +20,9 @@ class ImportController extends Controller
         return response()->json($this->serializer->toArray($import), 201);
     }
 
-    public function show(string $id): JsonResponse
+    public function show(int $id): JsonResponse
     {
-        $import = $this->service->getImportStatus($id);
+        $import = $this->service->findImport($id);
         return response()->json($this->serializer->toArray($import));
     }
 }
