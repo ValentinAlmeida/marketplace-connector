@@ -24,7 +24,7 @@ class FetchOfferIdsListener
             $this->importService->updateImport($import);
             return;
         }
-
+        
         event(new OfferIdsFetched($import->getIdentifier()->value(), $offerIds));
     }
 }
