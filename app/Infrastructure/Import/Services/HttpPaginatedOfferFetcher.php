@@ -1,17 +1,19 @@
 <?php
 
-namespace App\Domain\Import\Services;
+namespace App\Infrastructure\Import\Services;
 
 use App\Domain\Import\Config\ImportConfig;
+use App\Domain\Import\Services\PaginatedOfferFetcherInterface;
 use Illuminate\Support\Facades\Http;
 
-class PaginatedOfferFetcher
+class HttpPaginatedOfferFetcher implements PaginatedOfferFetcherInterface
 {
-    public function __construct(private ImportConfig $config){}
+    public function __construct(private ImportConfig $config) {}
 
     public function fetch(): array
     {
         $baseUrl = $this->config->getOffersEndpoint();
+        $fields = $this->config->fields();
 
         $page = 1;
         $lastPage = null;
@@ -27,10 +29,12 @@ class PaginatedOfferFetcher
             $data = $response->json();
 
             if (is_null($lastPage)) {
-                $lastPage = $data['pagination']['total_pages'];
+                $lastPage = data_get($data, $fields['paginationTotalPages']);
             }
 
-            $offerIds = array_merge($offerIds, $data['data']['offers']);
+            $ids = data_get($data, $fields['offersList'], []);
+            $offerIds = array_merge($offerIds, $ids);
+
             $page++;
         }
 

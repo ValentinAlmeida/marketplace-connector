@@ -1,19 +1,18 @@
 <?php
 
-namespace App\Domain\Import\Services;
+namespace App\Infrastructure\Import\Services;
 
 use App\Domain\Import\Config\ImportConfig;
 use App\Domain\Import\Entity\Import;
+use App\Domain\Import\Services\OfferHubSenderInterface;
 use App\Domain\Import\States\CompletedState;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Carbon;
 use RuntimeException;
 
-class OfferHubSender
+class HttpOfferHubSender implements OfferHubSenderInterface
 {
-    public function __construct(
-        private ImportConfig $config
-    ) {}
+    public function __construct(private ImportConfig $config) {}
 
     public function send(array $offers, Import $import): Import
     {

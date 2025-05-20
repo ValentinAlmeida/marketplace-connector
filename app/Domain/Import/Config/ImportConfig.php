@@ -13,13 +13,34 @@ class ImportConfig
         return $this->importerBaseUrl . '/offers';
     }
 
-    public function getOfferDetailsEndpoint(): string
+    public function getOfferDetailsEndpoint(int $id): string
     {
-        return $this->importerBaseUrl . '/offers/';
+        return "{$this->importerBaseUrl}/offers/{$id}";
+    }
+
+    public function getOfferPricesEndpoint(int $id): string
+    {
+        return "{$this->importerBaseUrl}/offers/{$id}/prices";
+    }
+
+    public function getOfferImagesEndpoint(int $id): string
+    {
+        return "{$this->importerBaseUrl}/offers/{$id}/images";
     }
 
     public function getHubCreateEndpoint(): string
     {
         return $this->importerBaseUrl . '/hub/create-offer';
+    }
+
+    public function fields(): array
+    {
+        return [
+            'paginationTotalPages' => 'pagination.total_pages',
+            'offersList' => 'data.offers',
+            'offerData' => 'data',
+            'imagesList' => 'images',
+            'price' => 'price',
+        ];
     }
 }
