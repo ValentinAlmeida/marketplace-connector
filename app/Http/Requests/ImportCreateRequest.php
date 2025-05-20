@@ -7,13 +7,28 @@ use App\Domain\Import\Dto\ImportCreateDto;
 use Carbon\Carbon;
 use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * Class ImportCreateRequest
+ *
+ * Handles validation and transformation of import creation input.
+ */
 class ImportCreateRequest extends FormRequest
 {
+    /**
+     * Determine if the user is authorized to make this request.
+     *
+     * @return bool True if authorized
+     */
     public function authorize(): bool
     {
         return true;
     }
 
+    /**
+     * Get the validation rules for the request.
+     *
+     * @return array Validation rules
+     */
     public function rules(): array
     {
         return [
@@ -22,6 +37,11 @@ class ImportCreateRequest extends FormRequest
         ];
     }
 
+    /**
+     * Transform the request data into a DTO.
+     *
+     * @return ImportCreateDto The DTO containing validated request data
+     */
     public function getDto(): ImportCreateDto
     {
         return new ImportCreateDto(

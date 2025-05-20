@@ -6,8 +6,19 @@ use App\Domain\Import\Entity\Import;
 use App\Domain\Import\Enums\ImportStatus;
 use App\Models\Import as ImportModel;
 
+/**
+ * Class ImportAdapter
+ *
+ * Responsible for converting between Import entities and Eloquent models.
+ */
 class ImportAdapter
 {
+    /**
+     * Converts an Eloquent Import model to a domain Import entity.
+     *
+     * @param ImportModel $model The Eloquent model representing the import.
+     * @return Import The corresponding domain Import entity.
+     */
     public static function toEntity(ImportModel $model): Import
     {
         return Import::restore(
@@ -29,6 +40,12 @@ class ImportAdapter
         );
     }
 
+    /**
+     * Converts a domain Import entity to a format suitable for Eloquent persistence.
+     *
+     * @param Import $entity The domain Import entity.
+     * @return array Associative array of attributes to be used by the Eloquent model.
+     */
     public static function toModel(Import $entity): array
     {
         $props = $entity->getProps();

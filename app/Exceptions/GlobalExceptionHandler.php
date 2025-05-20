@@ -15,6 +15,12 @@ use Illuminate\Foundation\Configuration\Exceptions;
 
 class GlobalExceptionHandler
 {
+    /**
+     * Register custom exception handling callbacks.
+     *
+     * @param Exceptions $exceptions
+     * @return void
+     */
     public function register(Exceptions $exceptions): void
     {
         $exceptions->reportable(function (Throwable $e) {
@@ -25,6 +31,13 @@ class GlobalExceptionHandler
         });
     }
 
+    /**
+     * Render an exception into an HTTP response.
+     *
+     * @param Request $request
+     * @param Throwable $e
+     * @return Response|JsonResponse
+     */
     public function render(Request $request, Throwable $e): Response|JsonResponse
     {
         if ($e instanceof ValidationException) {
@@ -46,6 +59,13 @@ class GlobalExceptionHandler
         return $this->prepareJsonResponse($request, $e);
     }
 
+    /**
+     * Convert a validation exception into a JSON response.
+     *
+     * @param ValidationException $e
+     * @param Request $request
+     * @return JsonResponse
+     */
     protected function convertValidationExceptionToResponse(ValidationException $e, Request $request): JsonResponse
     {
         return response()->json([
@@ -54,6 +74,13 @@ class GlobalExceptionHandler
         ], $e->status);
     }
 
+    /**
+     * Return a response for unauthenticated requests.
+     *
+     * @param Request $request
+     * @param AuthenticationException $exception
+     * @return JsonResponse
+     */
     protected function unauthenticated(Request $request, AuthenticationException $exception): JsonResponse
     {
         return response()->json([
@@ -61,6 +88,12 @@ class GlobalExceptionHandler
         ], 401);
     }
 
+    /**
+     * Render an HTTP exception into a JSON response.
+     *
+     * @param HttpException $e
+     * @return JsonResponse
+     */
     protected function renderHttpException(HttpException $e): JsonResponse
     {
         return response()->json([
@@ -68,6 +101,13 @@ class GlobalExceptionHandler
         ], $e->getStatusCode());
     }
 
+    /**
+     * Prepare a JSON response for a general exception.
+     *
+     * @param Request $request
+     * @param Throwable $e
+     * @return JsonResponse
+     */
     protected function prepareJsonResponse(Request $request, Throwable $e): JsonResponse
     {
         $status = $this->determineStatusCode($e);
@@ -81,6 +121,12 @@ class GlobalExceptionHandler
         ], $status);
     }
 
+    /**
+     * Determine the HTTP status code for the exception.
+     *
+     * @param Throwable $e
+     * @return int
+     */
     protected function determineStatusCode(Throwable $e): int
     {
         if ($e instanceof HttpException) {
