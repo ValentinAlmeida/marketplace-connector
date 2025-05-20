@@ -2,31 +2,28 @@
 
 namespace App\Domain\Import\Services;
 
+use App\Domain\Import\Config\ImportConfig;
 use App\Domain\Import\Entity\Import;
 use App\Domain\Import\States\CompletedState;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Carbon;
+use RuntimeException;
 
 class OfferHubSender
 {
     public function __construct(
-        private readonly string $baseUrl,
-        private readonly Import $import
+        private ImportConfig $config
     ) {}
 
-    /**
-     * Envia ofertas para o hub, atualiza progresso e estado da importação
-     *
-     * @param Offer[] $offers
-     * @return void
-     */
-    public function send(array $offers): void
+    public function send(array $offers, Import $import): Import
     {
+        $baseUrl = $this->config->getHubCreateEndpoint();
+
         $total = count($offers);
         $completed = 0;
 
         foreach ($offers as $offer) {
-            $response = Http::retry(3, 100)->post($this->baseUrl, [
+            $response = Http::retry(3, 100)->post($baseUrl, [
                 'title' => $offer->getProps()->title,
                 'description' => $offer->getProps()->description,
                 'status' => $offer->getProps()->status,
@@ -34,15 +31,17 @@ class OfferHubSender
             ]);
 
             if (!$response->successful()) {
-                $this->import->fail('Tentativa de criar registro no hub deu falha');
-                return;
+                $import->fail('Tentativa de criar registro no hub deu falha');
+                throw new RuntimeException('Erro ao enviar oferta para o hub.');
             }
 
             $completed++;
-            $this->import->updateProgress($completed, $total);
+            $import->updateProgress($completed, $total);
         }
 
-        $this->import->changeState(new CompletedState);
-        $this->import->setCompletedAt(Carbon::now());
+        $import->changeState(new CompletedState);
+        $import->setCompletedAt(Carbon::now());
+
+        return $import;
     }
 }

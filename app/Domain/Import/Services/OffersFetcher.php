@@ -1,6 +1,7 @@
 <?php
 namespace App\Domain\Import\Services;
 
+use App\Domain\Import\Config\ImportConfig;
 use App\Domain\Offer\Dto\OfferCreateDto;
 use App\Domain\Offer\Entity\Offer;
 use App\Domain\Shared\ValueObjects\Reference;
@@ -8,12 +9,7 @@ use Illuminate\Support\Facades\Http;
 
 class OffersFetcher
 {
-    protected string $baseUrl;
-
-    public function __construct(string $baseUrl)
-    {
-        $this->baseUrl = $baseUrl;
-    }
+    public function __construct(private ImportConfig $config){}
 
     /**
      * @param array<int> $offerIds
@@ -21,10 +17,12 @@ class OffersFetcher
      */
     public function fetch(array $offerIds): array
     {
-        return array_map(function (int $offerId) {
-            $response = Http::retry(3, 100)->get($this->baseUrl . $offerId);
-            $responsePrices = Http::retry(3, 100)->get($this->baseUrl . $offerId . '/prices');
-            $responseImages = Http::retry(3, 100)->get($this->baseUrl . $offerId . '/images');
+        $baseUrl = $this->config->getOfferDetailsEndpoint();
+
+        return array_map(function (int $offerId) use ($baseUrl) {
+            $response = Http::retry(3, 100)->get($baseUrl . $offerId);
+            $responsePrices = Http::retry(3, 100)->get($baseUrl . $offerId . '/prices');
+            $responseImages = Http::retry(3, 100)->get($baseUrl . $offerId . '/images');
 
             if (
                 !$response->successful() ||
