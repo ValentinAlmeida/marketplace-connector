@@ -6,9 +6,12 @@ use App\Events\Import\OffersDispatchedToHub;
 use App\Events\Import\OffersRetrieved;
 use App\UseCase\Contracts\Gateways\IOfferSender;
 use App\UseCase\Contracts\Import\IImportProcessor;
+use App\UseCase\Import\Support\HandlesImportFailures;
 
 class OnOffersRetrieved
 {
+    use HandlesImportFailures;
+    
     /**
      * Create a new listener instance.
      *
@@ -31,10 +34,12 @@ class OnOffersRetrieved
      */
     public function handle(OffersRetrieved $event): void
     {
-        $import = $this->importService->findImport($event->importId);
-        $this->hubSender->send($event->offers, $import);
-        $this->importService->updateImport($import);
+        $this->executeSafely($event->importId, function () use ($event) {
+            $import = $this->importService->findImport($event->importId);
+            $this->hubSender->send($event->offers, $import);
+            $this->importService->updateImport($import);
 
-        event(new OffersDispatchedToHub($event->importId));
+            event(new OffersDispatchedToHub($event->importId));
+        });
     }
 }

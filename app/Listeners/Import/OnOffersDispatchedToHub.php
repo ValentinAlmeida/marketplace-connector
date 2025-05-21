@@ -29,9 +29,14 @@ class OnOffersDispatchedToHub
     public function handle(OffersDispatchedToHub $event): void
     {
         $import = $this->importService->findImport($event->importId);
-        $import->changeState(new CompletedState());
-        $import->setCompletedAt(Carbon::now());
+        try {
+            $import->changeState(new CompletedState());
+            $import->setCompletedAt(Carbon::now());
 
-        $this->importService->updateImport($import);
+            $this->importService->updateImport($import);
+        } catch (\Throwable $e) {
+            $import->fail($e->getMessage());
+            $this->importService->updateImport($import);
+        }
     }
 }

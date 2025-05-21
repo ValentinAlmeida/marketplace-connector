@@ -34,6 +34,6 @@ final class ProcessOffers implements ShouldQueue
      */
     public function handle(Process $useCase): void
     {
-        $useCase->execute($this->importId);
+        $useCase->execute($this->importId); 
     }
 }

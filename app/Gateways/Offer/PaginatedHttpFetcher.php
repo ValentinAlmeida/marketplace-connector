@@ -2,13 +2,16 @@
 
 namespace App\Gateways\Offer;
 
+use App\UseCase\Contracts\Gateways\IHttpClient;
 use App\UseCase\Contracts\Gateways\IPaginatedOfferFetcher;
 use App\UseCase\Import\Config\ImportConfig;
-use Illuminate\Support\Facades\Http;
 
 class PaginatedHttpFetcher implements IPaginatedOfferFetcher
 {
-    public function __construct(private ImportConfig $config) {}
+    public function __construct(
+        private ImportConfig $config,
+        private IHttpClient $httpClient
+    ) {}
 
     public function fetch(): array
     {
@@ -20,13 +23,13 @@ class PaginatedHttpFetcher implements IPaginatedOfferFetcher
         $offerIds = [];
 
         while (is_null($lastPage) || $page <= $lastPage) {
-            $response = Http::retry(3, 100)->get($baseUrl, ['page' => $page]);
+            $response = $this->httpClient->get($baseUrl, ['page' => $page]);
 
-            if (!$response->successful()) {
+            if ($response->getStatusCode() !== 200) {
                 return [];
             }
 
-            $data = $response->json();
+            $data = json_decode($response->getBody(), true);
 
             if (is_null($lastPage)) {
                 $lastPage = data_get($data, $fields['paginationTotalPages']);
