@@ -2,13 +2,14 @@
 
 namespace App\Providers;
 
-use App\Domain\Import\Config\ImportConfig;
-use App\Domain\Import\Services\OfferHubSenderInterface;
-use App\Domain\Import\Services\OffersFetcherInterface;
-use App\Domain\Import\Services\PaginatedOfferFetcherInterface;
-use App\Infrastructure\Import\Services\HttpOfferHubSender;
-use App\Infrastructure\Import\Services\HttpOffersFetcher;
-use App\Infrastructure\Import\Services\HttpPaginatedOfferFetcher;
+use App\UseCase\Import\Config\ImportConfig;
+
+use App\Gateways\Offer\HttpFetcher;
+use App\Gateways\Offer\HttpSender;
+use App\Gateways\Offer\PaginatedHttpFetcher;
+use App\UseCase\Contracts\Gateways\IOfferFetcher;
+use App\UseCase\Contracts\Gateways\IOfferSender;
+use App\UseCase\Contracts\Gateways\IPaginatedOfferFetcher;
 use Illuminate\Support\ServiceProvider;
 
 class ImportServiceProvider extends ServiceProvider
@@ -21,8 +22,8 @@ class ImportServiceProvider extends ServiceProvider
             );
         });
 
-        $this->app->singleton(OfferHubSenderInterface::class, HttpOfferHubSender::class);
-        $this->app->singleton(OffersFetcherInterface::class, HttpOffersFetcher::class);
-        $this->app->singleton(PaginatedOfferFetcherInterface::class, HttpPaginatedOfferFetcher::class);
+        $this->app->singleton(IOfferSender::class, HttpSender::class);
+        $this->app->singleton(IOfferFetcher::class, HttpFetcher::class);
+        $this->app->singleton(IPaginatedOfferFetcher::class, PaginatedHttpFetcher::class);
     }
 }

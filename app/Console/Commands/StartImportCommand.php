@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Domain\Import\Jobs\ImportOffersJob;
+use App\Jobs\Import\ProcessOffers;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 
@@ -22,7 +22,7 @@ class StartImportCommand extends Command
 
         $this->info("Processando importação {$importId}...");
 
-        ImportOffersJob::dispatchSync($importId);
+        ProcessOffers::dispatchSync($importId);
 
         $this->info("Importação concluída!");
         Log::info("Importação finalizada", ['import_id' => $importId]);

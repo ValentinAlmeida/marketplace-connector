@@ -4,30 +4,30 @@ namespace App\Providers;
 
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 
-use App\Domain\Import\Events\ImportStarted;
-use App\Domain\Import\Events\OfferIdsFetched;
-use App\Domain\Import\Events\OffersFetched;
-use App\Domain\Import\Events\OffersSentToHub;
+use App\Events\Import\OfferIdsRetrieved;
+use App\Events\Import\OffersDispatchedToHub;
+use App\Events\Import\OffersRetrieved;
+use App\Events\Import\Started;
 
-use App\Domain\Import\Listeners\FetchOfferIdsListener;
-use App\Domain\Import\Listeners\FetchOffersListener;
-use App\Domain\Import\Listeners\SendOffersToHubListener;
-use App\Domain\Import\Listeners\FinalizeImportListener;
+use App\Listeners\Import\OnOfferIdsRetrieved;
+use App\Listeners\Import\OnOffersDispatchedToHub;
+use App\Listeners\Import\OnOffersRetrieved;
+use App\Listeners\Import\OnStarted;
 
 class EventServiceProvider extends ServiceProvider
 {
     protected $listen = [
-        ImportStarted::class => [
-            FetchOfferIdsListener::class,
+        Started::class => [
+            OnStarted::class,
         ],
-        OfferIdsFetched::class => [
-            FetchOffersListener::class,
+        OfferIdsRetrieved::class => [
+            OnOfferIdsRetrieved::class,
         ],
-        OffersFetched::class => [
-            SendOffersToHubListener::class,
+        OffersRetrieved::class => [
+            OnOffersRetrieved::class,
         ],
-        OffersSentToHub::class => [
-            FinalizeImportListener::class,
+        OffersDispatchedToHub::class => [
+            OnOffersDispatchedToHub::class,
         ],
     ];
 

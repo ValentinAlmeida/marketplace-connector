@@ -3,7 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Constants\Format;
-use App\Domain\Import\Dto\ImportCreateDto;
+use App\UseCase\Import\Dto\ImportCreateDto;
 use Carbon\Carbon;
 use Illuminate\Foundation\Http\FormRequest;
 

@@ -2,7 +2,7 @@
 
 namespace App\Http\Serializers;
 
-use App\Domain\Import\Entity\Import;
+use App\Entities\Import;
 
 /**
  * Class ImportSerializer

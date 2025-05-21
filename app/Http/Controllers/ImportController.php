@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Domain\Import\Services\ImportServiceInterface;
 use App\Http\Requests\ImportCreateRequest;
 use App\Http\Serializers\ImportSerializer;
+use App\UseCase\Contracts\Import\IImportProcessor;
 use Illuminate\Http\JsonResponse;
 
 /**
@@ -21,7 +21,7 @@ class ImportController extends Controller
      * @param ImportSerializer $serializer
      */
     public function __construct(
-        private ImportServiceInterface $service,
+        private IImportProcessor $service,
         private ImportSerializer $serializer
     ) {}
 
