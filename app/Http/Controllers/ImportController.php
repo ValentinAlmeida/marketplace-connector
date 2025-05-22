@@ -21,7 +21,7 @@ class ImportController extends Controller
      * @param ImportSerializer $serializer
      */
     public function __construct(
-        private IImportProcessor $service,
+        private IImportProcessor $useCase,
         private ImportSerializer $serializer
     ) {}
 
@@ -33,7 +33,7 @@ class ImportController extends Controller
      */
     public function store(ImportCreateRequest $request): JsonResponse
     {
-        $this->service->createImport($request->getDto());
+        $this->useCase->createImport($request->getDto());
         return response()->json("Importação agendada com sucesso!", 201);
     }
 
@@ -45,7 +45,7 @@ class ImportController extends Controller
      */
     public function show(int $id): JsonResponse
     {
-        $import = $this->service->findImport($id);
+        $import = $this->useCase->findImport($id);
         return response()->json($this->serializer->toArray($import));
     }
 }
