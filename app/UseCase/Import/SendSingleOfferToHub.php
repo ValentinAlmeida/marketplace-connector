@@ -49,11 +49,6 @@ class SendSingleOfferToHub implements ISendSingleOfferToHub
         try {
             $import = $this->importService->findImport($importId);
             
-            if ($import->getProps()->status->isFinal()) {
-                Log::warning("SendSingleOfferToHubUseCase: Import {$importId} already finalized. Aborting for offerId {$originalOfferId}.");
-                return;
-            }
-            
             if ($offerData instanceof \App\Entities\Offer) {
                 $offerProps = $offerData->getProps();
                 $payloadToSend = [

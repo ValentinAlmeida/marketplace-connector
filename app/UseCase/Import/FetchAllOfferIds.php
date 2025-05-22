@@ -44,11 +44,6 @@ class FetchAllOfferIds implements IFetchAllOfferIds
     {
         Log::info("FetchAllOfferIdsUseCase: Started for importId {$importId}");
         $import = $this->importService->findImport($importId);
-        
-        if ($import->getProps()->status->isFinal()) {
-             Log::warning("FetchAllOfferIdsUseCase: Import {$importId} already finalized. Aborting.");
-             return;
-        }
 
         $offerIds = $this->fetcher->fetch();
 

@@ -46,11 +46,6 @@ class FetchSingleOfferDetails implements IFetchSingleOfferDetails
         Log::info("FetchSingleOfferDetailsUseCase: Started for importId {$importId}, offerId {$offerId}");
         try {
             $import = $this->importService->findImport($importId);
-            
-            if ($import->getProps()->status->isFinal()) {
-                Log::warning("FetchSingleOfferDetailsUseCase: Import {$importId} already finalized. Aborting for offerId {$offerId}.");
-                return;
-            }
 
             $offersData = $this->fetcher->fetch([$offerId]);
 

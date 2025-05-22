@@ -60,11 +60,6 @@ class StartImportCommand extends Command
         }
         
         $initialStatus = ImportStatus::tryFrom($initialImport->{ImportModel::STATUS});
-        if ($initialStatus && $initialStatus->isFinal()) {
-             $this->warn("Import {$importId} is already in a final state ({$initialStatus->value}). No job will be dispatched.");
-             $this->displayImportDetails($initialImport);
-             return Command::SUCCESS;
-        }
         if ($initialStatus === ImportStatus::PROCESSING) {
              $this->warn("Import {$importId} is already processing. Monitoring existing status...");
         } else {

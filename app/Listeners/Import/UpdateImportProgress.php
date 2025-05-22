@@ -42,11 +42,6 @@ class UpdateImportProgress implements ShouldQueue
         Log::info("Listener UpdateImportProgress: importId {$event->importId}. Event: " . get_class($event));
         $import = $this->importService->findImport($event->importId);
 
-        if (!$import || $import->getProps()->status->isFinal()) {
-            Log::warning("Listener UpdateImportProgress: Import {$event->importId} not found or already finalized.");
-            return;
-        }
-
         if ($event instanceof OfferSuccessfullySentToHub) {
             $import->incrementProcessedItems();
             Log::info("Listener UpdateImportProgress: Processed OK for importId {$event->importId}, offerId {$event->originalOfferId}.");
