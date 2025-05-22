@@ -2,21 +2,21 @@
 
 namespace App\UseCase\Contracts\Gateways;
 
-use App\Entities\Import;
-
 /**
- * Interface OfferHubSenderInterface
+ * Interface IOfferSender
  *
- * Defines the contract for sending offer data to an external hub or service.
+ * Defines the contract for services responsible for sending offer data to an external system or hub.
  */
 interface IOfferSender
 {
     /**
-     * Send the given offers to the hub associated with the import.
+     * Sends a single offer payload.
      *
-     * @param array $offers List of offer data to be sent.
-     * @param Import $import The import entity associated with the offers.
-     * @return Import The updated import entity after sending the offers.
+     * Implementations should handle the actual transmission of the offer data.
+     * They may throw exceptions if the sending process fails.
+     *
+     * @param array $offerPayload The data payload of the offer to be sent.
+     * @return void
      */
-    public function send(array $offers, Import $import): Import;
+    public function sendSingle(array $offerPayload): void;
 }

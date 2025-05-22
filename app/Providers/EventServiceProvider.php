@@ -2,32 +2,29 @@
 
 namespace App\Providers;
 
+use App\Events\Import\OfferDetailsFetchedForImport;
+use App\Events\Import\OfferIdsRetrievedForImport;
+use App\Events\Import\OfferProcessingFailed;
+use App\Events\Import\OfferSuccessfullySentToHub;
+use App\Listeners\Import\DispatchOfferDetailJobs;
+use App\Listeners\Import\DispatchSendToHubJob;
+use App\Listeners\Import\UpdateImportProgress;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
-
-use App\Events\Import\OfferIdsRetrieved;
-use App\Events\Import\OffersDispatchedToHub;
-use App\Events\Import\OffersRetrieved;
-use App\Events\Import\Started;
-
-use App\Listeners\Import\OnOfferIdsRetrieved;
-use App\Listeners\Import\OnOffersDispatchedToHub;
-use App\Listeners\Import\OnOffersRetrieved;
-use App\Listeners\Import\OnStarted;
 
 class EventServiceProvider extends ServiceProvider
 {
     protected $listen = [
-        Started::class => [
-            OnStarted::class,
+        OfferIdsRetrievedForImport::class => [
+            DispatchOfferDetailJobs::class,
         ],
-        OfferIdsRetrieved::class => [
-            OnOfferIdsRetrieved::class,
+        OfferDetailsFetchedForImport::class => [
+            DispatchSendToHubJob::class,
         ],
-        OffersRetrieved::class => [
-            OnOffersRetrieved::class,
+        OfferSuccessfullySentToHub::class => [
+            UpdateImportProgress::class,
         ],
-        OffersDispatchedToHub::class => [
-            OnOffersDispatchedToHub::class,
+        OfferProcessingFailed::class => [
+            UpdateImportProgress::class,
         ],
     ];
 

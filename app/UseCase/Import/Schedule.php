@@ -3,26 +3,30 @@
 namespace App\UseCase\Import;
 
 use App\Entities\Import;
-use App\Jobs\Import\ProcessOffers;
+use App\Jobs\Import\ProcessImportJob;
 use App\UseCase\Contracts\Import\ISchedule;
 
 /**
- * Class ScheduleImportJobUseCase
+ * Class Schedule
  *
- * Handles scheduling the import job for execution at the specified time.
+ * Use case responsible for scheduling an import processing job.
+ * It dispatches the job with a delay corresponding to the import's scheduled time.
  */
 class Schedule implements ISchedule
 {
     /**
-     * Dispatches the ImportOffersJob to be executed after a given delay.
+     * Executes the scheduling of an import processing job.
      *
-     * The delay is based on the scheduledAt property of the Import entity.
+     * Dispatches a ProcessImportJob to the 'imports_control' queue,
+     * delayed until the scheduledAt time specified in the Import entity.
      *
-     * @param Import $import The import entity containing scheduling information
+     * @param Import $import The Import entity containing the scheduling details and ID.
+     * @return void
      */
     public function execute(Import $import): void
     {
-        ProcessOffers::dispatch($import->getIdentifier()->value())
-            ->delay($import->getProps()->scheduledAt);
+        ProcessImportJob::dispatch($import->getIdentifier()->value())
+            ->delay($import->getProps()->scheduledAt)
+            ->onQueue('imports_control');
     }
 }

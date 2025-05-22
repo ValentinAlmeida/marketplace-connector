@@ -3,58 +3,56 @@
 namespace App\Entities\Enums;
 
 /**
- * Enum representing the status of an import process.
+ * Enum ImportStatus
+ *
+ * Defines the possible statuses for an import process.
+ * Each status has a string value, typically used as an identifier or translation key.
  */
 enum ImportStatus: string
 {
-    /** The import is scheduled and has not started yet. */
     case PENDING = 'import.status.pending';
-
-    /** The import is currently in progress. */
     case PROCESSING = 'import.status.processing';
-
-    /** The import completed successfully. */
     case COMPLETED = 'import.status.completed';
-
-    /** The import failed during processing. */
     case FAILED = 'import.status.failed';
-
-    /** The import was cancelled before completion. */
     case CANCELLED = 'import.status.cancelled';
 
     /**
-     * Returns an array of metadata associated with the status.
+     * Provides metadata associated with the status, primarily a human-readable description.
      *
-     * @return array{description: string}
+     * @return array An array containing metadata, with a 'description' key.
      */
     public function withMeta(): array
     {
         return match ($this) {
-            self::PENDING => [
-                'description' => 'Pendente',
-            ],
-            self::PROCESSING => [
-                'description' => 'Processando',
-            ],
-            self::COMPLETED => [
-                'description' => 'Concluída',
-            ],
-            self::FAILED => [
-                'description' => 'Falhou',
-            ],
-            self::CANCELLED => [
-                'description' => 'Cancelada',
-            ],
+            self::PENDING => ['description' => 'Pending'],
+            self::PROCESSING => ['description' => 'Processing'],
+            self::COMPLETED => ['description' => 'Completed'],
+            self::FAILED => ['description' => 'Failed'],
+            self::CANCELLED => ['description' => 'Cancelled'],
         };
     }
 
     /**
-     * Checks if the status represents a failed import.
+     * Checks if the current status is FAILED.
      *
-     * @return bool True if status is FAILED, false otherwise.
+     * @return bool True if the status is FAILED, false otherwise.
      */
     public function isFailed(): bool
     {
         return $this === self::FAILED;
+    }
+
+    /**
+     * Checks if the current status represents a final state of the import process.
+     * Final states are COMPLETED, FAILED, or CANCELLED.
+     *
+     * @return bool True if the status is a final state, false otherwise.
+     */
+    public function isFinal(): bool
+    {
+        return match ($this) {
+            self::COMPLETED, self::FAILED, self::CANCELLED => true,
+            default => false,
+        };
     }
 }

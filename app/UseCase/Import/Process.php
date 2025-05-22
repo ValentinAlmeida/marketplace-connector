@@ -2,23 +2,27 @@
 
 namespace App\UseCase\Import;
 
-use App\Events\Import\Started;
+use App\Jobs\Import\ProcessImportJob;
 use App\UseCase\Contracts\Import\IProcess;
 
 /**
- * Use case responsible for initiating the import process.
+ * Class Process
  *
- * This class triggers the initial event that starts the import flow.
+ * Use case responsible for dispatching a job to handle the processing of an import.
+ * This serves as an entry point to queue the main import processing task.
  */
 class Process implements IProcess
 {
     /**
-     * Execute the import process by dispatching the ImportStarted event.
+     * Executes the action of dispatching an import processing job.
      *
-     * @param int $importId The identifier of the import to be processed.
+     * Dispatches a ProcessImportJob to the 'imports_control' queue.
+     *
+     * @param int $importId The ID of the import to be processed.
+     * @return void
      */
     public function execute(int $importId): void
     {
-        event(new Started($importId));
+        ProcessImportJob::dispatch($importId)->onQueue('imports_control');
     }
 }

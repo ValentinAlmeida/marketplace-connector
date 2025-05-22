@@ -2,47 +2,46 @@
 
 namespace App\Gateways\Offer;
 
-use App\Entities\Import;
-use App\Entities\States\Import\CompletedState;
 use App\UseCase\Contracts\Gateways\IHttpClient;
 use App\UseCase\Contracts\Gateways\IOfferSender;
 use App\UseCase\Import\Config\ImportConfig;
-use Illuminate\Support\Carbon;
 use RuntimeException;
 
+/**
+ * Class HttpSender
+ *
+ * Implements the IOfferSender interface to send offer data to an external system (Hub)
+ * via HTTP POST requests.
+ */
 class HttpSender implements IOfferSender
 {
+    /**
+     * HttpSender constructor.
+     *
+     * @param ImportConfig $config The configuration for the import process, including endpoint URLs.
+     * @param IHttpClient $httpClient The HTTP client used to make requests.
+     */
     public function __construct(
         private ImportConfig $config,
         private IHttpClient $httpClient
     ) {}
 
-    public function send(array $offers, Import $import): Import
+    /**
+     * Sends a single offer payload to the configured Hub endpoint.
+     *
+     * @param array $offerPayload The data payload of the offer to be sent.
+     * @return void
+     * @throws RuntimeException If the HTTP request fails or the Hub returns an unexpected status code.
+     */
+    public function sendSingle(array $offerPayload): void
     {
         $baseUrl = $this->config->getHubCreateEndpoint();
-        $total = count($offers);
-        $completed = 0;
+        
+        $response = $this->httpClient->post($baseUrl, $offerPayload);
 
-        foreach ($offers as $offer) {
-            $response = $this->httpClient->post($baseUrl, [
-                'title' => $offer->getProps()->title,
-                'description' => $offer->getProps()->description,
-                'status' => $offer->getProps()->status,
-                'stock' => $offer->getProps()->stock,
-            ]);
-            
-            if ($response->getStatusCode() !== 201) {
-                $import->fail('Tentativa de criar registro no hub deu falha');
-                throw new RuntimeException('Erro ao enviar oferta para o hub.');
-            }
-
-            $completed++;
-            $import->updateProgress($completed, $total);
+        if ($response->getStatusCode() !== 201) {
+            $bodyContent = $response->getBody()->getContents();
+            throw new RuntimeException("Error sending offer to the hub. Status: {$response->getStatusCode()}. Response: {$bodyContent}");
         }
-
-        $import->changeState(new CompletedState);
-        $import->setCompletedAt(Carbon::now());
-
-        return $import;
     }
 }
