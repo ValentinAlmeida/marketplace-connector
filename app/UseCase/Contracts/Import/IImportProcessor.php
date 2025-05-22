@@ -16,17 +16,17 @@ interface IImportProcessor
      * Create a new import.
      *
      * @param ImportCreateDto $dto Data Transfer Object containing import creation data
-     * @return Import The created import entity
+     * @return void
      */
-    public function createImport(ImportCreateDto $dto): Import;
+    public function createImport(ImportCreateDto $dto): void;
 
     /**
      * Update an existing import.
      *
      * @param Import $dto The import entity to update
-     * @return Import The updated import entity
+     * @return void
      */
-    public function updateImport(Import $dto): Import;
+    public function updateImport(Import $dto): void;
 
     /**
      * Find an import by its identifier.

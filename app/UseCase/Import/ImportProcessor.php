@@ -33,22 +33,22 @@ class ImportProcessor implements IImportProcessor
      * Create a new import record.
      *
      * @param ImportCreateDto $dto Data transfer object containing import data
-     * @return Import The created import entity
+     * @return void
      */
-    public function createImport(ImportCreateDto $dto): Import
+    public function createImport(ImportCreateDto $dto): void
     {
-        return $this->createUseCase->execute($dto);
+        $this->createUseCase->execute($dto);
     }
 
     /**
      * Update an existing import record.
      *
      * @param Import $import The import entity to update
-     * @return Import The updated import entity
+     * @return void
      */
-    public function updateImport(Import $import): Import
+    public function updateImport(Import $import): void
     {
-        return $this->updateUseCase->execute($import);
+        $this->updateUseCase->execute($import);
     }
 
     /**

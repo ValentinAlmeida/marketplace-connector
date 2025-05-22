@@ -3,8 +3,8 @@
 namespace App\UseCase\Import;
 
 use App\Entities\Import;
+use App\UnitOfWork\Contract\IUnitOfWork;
 use App\UseCase\Contracts\Import\ICreate;
-use App\UseCase\Contracts\IUnitOfWork;
 use App\UseCase\Contracts\Repositories\IImportRepository;
 use App\UseCase\Import\Dto\ImportCreateDto;
 
@@ -30,17 +30,15 @@ class Create implements ICreate
      * Executes the use case for creating a new import.
      *
      * @param ImportCreateDto $dto Data transfer object containing import creation data
-     * @return Import The created and persisted import entity
+     * @return void
      */
-    public function execute(ImportCreateDto $dto): Import
+    public function execute(ImportCreateDto $dto): void
     {
-        return $this->unitOfWork->run(function () use ($dto) {
+        $this->unitOfWork->run(function () use ($dto) {
             $import = Import::create($dto);
             $savedImport = $this->repository->create($import);
             
             $this->scheduleJobUseCase->execute($savedImport);
-            
-            return $savedImport;
         });
     }
 }

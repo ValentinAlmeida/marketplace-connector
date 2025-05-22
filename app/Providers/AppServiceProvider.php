@@ -5,6 +5,8 @@ namespace App\Providers;
 use App\Constants\Format;
 use App\Http\Serializers\ImportSerializer;
 use App\Repositories\ImportRepository;
+use App\UnitOfWork\Contract\IUnitOfWork;
+use App\UnitOfWork\UnitOfWork;
 use App\UseCase\Contracts\Import\ICreate;
 use App\UseCase\Contracts\Import\IFetchAllOfferIds;
 use App\UseCase\Contracts\Import\IFetchSingleOfferDetails;
@@ -14,7 +16,6 @@ use App\UseCase\Contracts\Import\IProcess;
 use App\UseCase\Contracts\Import\ISchedule;
 use App\UseCase\Contracts\Import\ISendSingleOfferToHub;
 use App\UseCase\Contracts\Import\IUpdate;
-use App\UseCase\Contracts\IUnitOfWork;
 use App\UseCase\Contracts\Repositories\IImportRepository;
 use App\UseCase\Import\Create;
 use App\UseCase\Import\FetchAllOfferIds;
@@ -25,7 +26,6 @@ use App\UseCase\Import\Process;
 use App\UseCase\Import\Schedule;
 use App\UseCase\Import\SendSingleOfferToHub;
 use App\UseCase\Import\Update;
-use App\UseCase\UnitOfWork;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider

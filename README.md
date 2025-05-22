@@ -19,7 +19,8 @@ Bem-vindo ao guia completo do Projeto Marketplace Connector! Este documento deta
   * [7. Crie o Container do Mockoon (Serviço de Mock)](#-7-crie-o-container-do-mockoon-serviço-de-mock)
 * [🛠️ Operações Comuns](#️-operações-comuns)
   * [🔍 Debugando Importações](#-debugando-importações)
-* [🎉 Próximos Passos](#-próximos-passos)
+* [📈 Pontos de Melhoria e Próximas Etapas (Checklist)](#-pontos-de-melhoria-e-próximas-etapas-checklist)
+* [🎉 Ambiente Pronto!](#-ambiente-pronto)
 
 ---
 
@@ -197,7 +198,49 @@ Se você precisar iniciar e monitorar uma importação específica manualmente (
 
 ---
 
-## 🎉 Pronto!
+## 📈 Pontos de Melhoria e Próximas Etapas (Checklist)
+
+Este projeto está em constante evolução. Aqui estão alguns pontos que podem ser considerados para futuras melhorias e implementações:
+
+* [ ] **Melhorias de Codigo:**
+    * [ ] Utilizar UUID ao inves de Identificadores na camada interna do servidor, e utilizar o ID apenas para relacionamento.
+* [ ] **Utilizar Docker Compose:**
+    * [ ] Criar um arquivo `docker-compose.yml` para orquestrar todos os serviços (backend, banco de dados, Redis, Mockoon).
+    * [ ] Simplificar os comandos de `build` e `run` para um único `docker-compose up`.
+    * [ ] Facilitar a configuração de rede e volumes.
+* [ ] **Gerenciamento de Configuração e Segredos:**
+    * [ ] Externalizar configurações sensíveis (como senhas de banco de dados) do `Dockerfile` e comandos `run` para variáveis de ambiente em um arquivo `.env` (usado pelo Docker Compose) ou um sistema de gerenciamento de segredos (como HashiCorp Vault, AWS Secrets Manager, etc.).
+    * [ ] Criar arquivos de configuração de exemplo (ex: `.env.example`).
+* [ ] **Otimização do Dockerfile e Imagens:**
+    * [ ] Implementar multi-stage builds no `Dockerfile.dev` e criar um `Dockerfile` otimizado para produção (menor tamanho, menos camadas, remoção de dependências de desenvolvimento).
+    * [ ] Analisar e reduzir o tamanho final das imagens Docker.
+* [ ] **Testes Automatizados:**
+    * [ ] Configurar e integrar testes unitários.
+    * [ ] Implementar testes de integração para os principais fluxos.
+    * [ ] Adicionar um script ou comando para rodar os testes facilmente no ambiente Docker.
+* [ ] **Integração Contínua / Entrega Contínua (CI/CD):**
+    * [ ] Configurar um pipeline de CI (ex: GitHub Actions, GitLab CI, Jenkins) para buildar e testar a aplicação automaticamente a cada push/merge.
+    * [ ] Configurar um pipeline de CD para deploy automatizado em ambientes de staging/produção.
+* [ ] **Logging e Monitoramento Avançado:**
+    * [ ] Centralizar logs dos containers (ex: ELK Stack, Grafana Loki, Datadog).
+    * [ ] Adicionar métricas de aplicação e monitoramento de performance (ex: Prometheus, Grafana, New Relic).
+* [ ] **Documentação Detalhada:**
+    * [ ] Documentar a arquitetura da aplicação.
+    * [ ] Detalhar as principais APIs e seus endpoints (talvez usando Swagger/OpenAPI).
+    * [ ] Criar guias para troubleshooting de problemas comuns.
+* [ ] **Segurança:**
+    * [ ] Realizar varreduras de vulnerabilidades nas imagens Docker e dependências.
+    * [ ] Implementar boas práticas de segurança no código da aplicação.
+* [ ] **Linters e Formatadores de Código:**
+    * [ ] Integrar ferramentas como PHP CS Fixer, ESLint/Prettier (se houver frontend) para garantir a consistência do código.
+    * [ ] Adicionar hooks de pre-commit para rodar linters/formatadores automaticamente.
+* [ ] **Melhorar o Comando `import:start`:**
+    * [ ] Adicionar opção para reprocessar apenas itens falhados de uma importação anterior.
+    * [ ] Permitir a especificação de mais de uma fila para os workers diretamente no comando de monitoramento ou como sugestão.
+
+---
+
+## 🎉 Ambiente Pronto!
 
 Seu ambiente Docker está configurado e os principais serviços estão funcionando. Agora é só codar e brilhar! 💻✨
 

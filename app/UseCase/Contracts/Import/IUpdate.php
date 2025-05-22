@@ -15,7 +15,7 @@ interface IUpdate
      * Executes the import update process.
      *
      * @param Import $import The Import entity containing the updated data.
-     * @return Import The updated Import entity.
+     * @return void
      */
-    public function execute(Import $import): Import;
+    public function execute(Import $import): void;
 }

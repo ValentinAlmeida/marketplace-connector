@@ -33,8 +33,8 @@ class ImportController extends Controller
      */
     public function store(ImportCreateRequest $request): JsonResponse
     {
-        $import = $this->service->createImport($request->getDto());
-        return response()->json($this->serializer->toArray($import), 201);
+        $this->service->createImport($request->getDto());
+        return response()->json("Importação agendada com sucesso!", 201);
     }
 
     /**

@@ -24,10 +24,10 @@ class Update implements IUpdate
      * Execute the update process for the given import entity.
      *
      * @param Import $import The import entity to be updated.
-     * @return Import The updated import entity.
+     * @return void
      */
-    public function execute(Import $import): Import
+    public function execute(Import $import): void
     {
-        return $this->repository->update($import);
+        $this->repository->update($import);
     }
 }

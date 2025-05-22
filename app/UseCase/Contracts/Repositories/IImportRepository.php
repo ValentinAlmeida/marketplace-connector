@@ -23,9 +23,9 @@ interface IImportRepository
      * Update an existing import record.
      *
      * @param Import $import The import entity to be updated
-     * @return Import The updated import entity
+     * @return void
      */
-    public function update(Import $import): Import;
+    public function update(Import $import): void;
 
     /**
      * Find an import by its ID.
@@ -34,12 +34,4 @@ interface IImportRepository
      * @return Import The found import entity
      */
     public function findById(int $id): Import;
-
-    /**
-     * List imports filtered by given criteria.
-     *
-     * @param array $filters Optional filters for querying imports
-     * @return Import[] An array of import entities
-     */
-    public function listImports(array $filters = []): array;
 }

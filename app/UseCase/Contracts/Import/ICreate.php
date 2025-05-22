@@ -16,7 +16,7 @@ interface ICreate
      * Executes the import creation process.
      *
      * @param ImportCreateDto $dto Data Transfer Object containing the necessary data to create a new import.
-     * @return Import The newly created Import entity.
+     * @return void
      */
-    public function execute(ImportCreateDto $dto): Import;
+    public function execute(ImportCreateDto $dto): void;
 }

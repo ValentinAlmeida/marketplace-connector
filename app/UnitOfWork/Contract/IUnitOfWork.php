@@ -1,6 +1,6 @@
 <?php
 
-namespace App\UseCase\Contracts;
+namespace App\UnitOfWork\Contract;
 
 use Closure;
 

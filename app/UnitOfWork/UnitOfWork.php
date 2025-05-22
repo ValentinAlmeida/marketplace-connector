@@ -1,8 +1,8 @@
 <?php
 
-namespace App\UseCase;
+namespace App\UnitOfWork;
 
-use App\UseCase\Contracts\IUnitOfWork;
+use App\UnitOfWork\Contract\IUnitOfWork;
 use Closure;
 use Illuminate\Support\Facades\DB;
 
