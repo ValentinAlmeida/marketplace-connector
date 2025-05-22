@@ -73,10 +73,6 @@ class UpdateImportProgress implements ShouldQueue
     private function checkAndFinalizeImport(int $importId): void
     {
         $import = $this->importService->findImport($importId);
-        if (!$import) {
-            Log::error("Listener UpdateImportProgress (checkAndFinalizeImport): Import {$importId} not found when attempting to finalize.");
-            return;
-        }
 
         $props = $import->getProps();
 

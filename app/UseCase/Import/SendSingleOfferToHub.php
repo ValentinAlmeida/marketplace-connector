@@ -48,11 +48,7 @@ class SendSingleOfferToHub implements ISendSingleOfferToHub
 
         try {
             $import = $this->importService->findImport($importId);
-            if (!$import) {
-                Log::error("SendSingleOfferToHubUseCase: Import {$importId} not found.");
-                OfferProcessingFailed::dispatch($importId, $originalOfferId, 'send_to_hub_setup', "Import {$importId} not found.");
-                return;
-            }
+            
             if ($import->getProps()->status->isFinal()) {
                 Log::warning("SendSingleOfferToHubUseCase: Import {$importId} already finalized. Aborting for offerId {$originalOfferId}.");
                 return;

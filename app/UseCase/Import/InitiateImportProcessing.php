@@ -39,11 +39,6 @@ class InitiateImportProcessing implements IInitiateImportProcessing
     {
         $import = $this->importService->findImport($importId);
 
-        if (!$import) {
-            Log::error("InitiateImportProcessingUseCase: Import {$importId} not found.");
-            return;
-        }
-
         if ($import->getProps()->status->isFinal() || $import->getProps()->status === ImportStatus::PROCESSING) {
             Log::info("InitiateImportProcessingUseCase: Import {$importId} already finalized or processing. No action taken.");
             return;
