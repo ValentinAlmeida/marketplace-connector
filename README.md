@@ -1,6 +1,6 @@
 # 🌟 Projeto Marketplace Connector: Configuração Simplificada e Operação Eficiente 🚀
 
-Bem-vindo ao guia completo do Projeto Marketplace Connector! Este documento detalha os passos para configurar o ambiente de desenvolvimento com Docker, iniciar os serviços essenciais e como realizar o debug de importações. Vamos nessa! 💪
+Bem-vindo ao guia completo do Projeto Marketplace Connector! Este documento detalha os passos para configurar o ambiente de desenvolvimento com Docker, iniciar os serviços essenciais, como realizar o debug de importações e como interagir com a API. Vamos nessa! 💪
 
 ---
 
@@ -19,6 +19,8 @@ Bem-vindo ao guia completo do Projeto Marketplace Connector! Este documento deta
   * [7. Crie o Container do Mockoon (Serviço de Mock)](#-7-crie-o-container-do-mockoon-serviço-de-mock)
 * [🛠️ Operações Comuns](#️-operações-comuns)
   * [🔍 Debugando Importações](#-debugando-importações)
+* [📖 Documentação da API](#-documentação-da-api)
+  * [Agendar Nova Importação](#agendar-nova-importação)
 * [📈 Pontos de Melhoria e Próximas Etapas (Checklist)](#-pontos-de-melhoria-e-próximas-etapas-checklist)
 * [🎉 Ambiente Pronto!](#-ambiente-pronto)
 
@@ -26,7 +28,7 @@ Bem-vindo ao guia completo do Projeto Marketplace Connector! Este documento deta
 
 ## 🌍 Visão Geral
 
-O Marketplace Connector é uma aplicação robusta projetada para integrar diferentes marketplaces. Este guia foca em colocar seu ambiente de desenvolvimento em funcionamento rapidamente usando Docker.
+O Marketplace Connector é uma aplicação robusta projetada para integrar diferentes marketplaces. Este guia foca em colocar seu ambiente de desenvolvimento em funcionamento rapidamente usando Docker e detalha como interagir com sua API.
 
 ---
 
@@ -37,6 +39,7 @@ Antes de começar, certifique-se de que você tem os seguintes softwares instala
 * **Docker:** [Instruções de Instalação](https://docs.docker.com/get-docker/)
 * **Docker Compose (Opcional, mas recomendado):** [Instruções de Instalação](https://docs.docker.com/compose/install/)
 * Um arquivo `mocketplace.json` na raiz do seu projeto para o serviço de mock.
+* Uma ferramenta para realizar requisições HTTP (como cURL, Postman, Insomnia).
 
 ---
 
@@ -198,6 +201,74 @@ Se você precisar iniciar e monitorar uma importação específica manualmente (
 
 ---
 
+## 📖 Documentação da API
+
+Esta seção detalha como interagir com os endpoints da API do Marketplace Connector.
+
+### Agendar Nova Importação
+
+* **Endpoint:** `POST /api/imports`
+    *(Nota: O prefixo `/api` é comum em aplicações Laravel. Ajuste conforme a configuração do seu projeto.)*
+* **Método:** `POST`
+* **Descrição:** Agenda uma nova importação de dados para ser processada posteriormente pelo sistema.
+* **Autenticação:** (Verifique se há middlewares de autenticação globais ou específicos para esta rota. O `ImportCreateRequest` em si permite acesso não autenticado com `authorize(): bool { return true; }`, mas a autenticação pode ser tratada em um nível anterior.)
+
+* **Corpo da Requisição (`application/json`):**
+    ```json
+    {
+        "description": "Importação de produtos da coleção de inverno",
+        "scheduled_at": "2025-07-15 10:00:00"
+    }
+    ```
+    **Campos:**
+    * `description` (string, opcional, max: 255): Uma descrição textual para identificar a importação. Se não fornecido, será nulo.
+    * `scheduled_at` (string, obrigatório): Data e hora em que a importação deve ser agendada para execução.
+        * **Formato Requerido:** Deve corresponder ao formato definido na constante `App\Constants\Format::DATE_TIME` (por exemplo, `Y-m-d H:i:s`). Consulte esta constante no código para o formato exato.
+        * **Validação:** O valor deve ser uma data/hora válida e igual ou posterior à data/hora atual no momento da requisição.
+
+* **Exemplo de Requisição (usando cURL):**
+    ```bash
+    curl -X POST http://localhost:8000/api/imports \
+    -H "Content-Type: application/json" \
+    -H "Accept: application/json" \
+    -d '{
+        "description": "Importação de novos usuários - Maio/2025",
+        "scheduled_at": "2025-05-30 14:30:00"
+    }'
+    ```
+    *(Lembre-se de ajustar `http://localhost:8000` se o seu backend estiver rodando em uma porta ou host diferente.)*
+
+* **Resposta de Sucesso:**
+    * **Código:** `201 Created`
+    * **Corpo:** O corpo da resposta será uma string JSON contendo a mensagem de sucesso.
+        ```json
+        "Importação agendada com sucesso!"
+        ```
+
+* **Respostas de Erro Comuns:**
+    * **Código:** `422 Unprocessable Entity`
+        * **Descrição:** Ocorre se os dados enviados na requisição falharem nas regras de validação.
+        * **Corpo (Exemplo):**
+            ```json
+            {
+                "message": "The given data was invalid. (Ou uma mensagem de erro traduzida)",
+                "errors": {
+                    "scheduled_at": [
+                        "O campo scheduled_at deve ser uma data igual ou posterior a agora.",
+                        "O campo scheduled_at não corresponde ao formato Y-m-d H:i:s."
+                    ],
+                    "description": [
+                        "O campo description não pode ser superior a 255 caracteres."
+                    ]
+                }
+            }
+            ```
+    * **Outros Códigos:**
+        * `401 Unauthorized` / `403 Forbidden`: Se a autenticação for necessária e falhar.
+        * `500 Internal Server Error`: Em caso de erros inesperados no servidor.
+
+---
+
 ## 📈 Pontos de Melhoria e Próximas Etapas (Checklist)
 
 Este projeto está em constante evolução. Aqui estão alguns pontos que podem ser considerados para futuras melhorias e implementações:
@@ -242,7 +313,7 @@ Este projeto está em constante evolução. Aqui estão alguns pontos que podem 
 
 ## 🎉 Ambiente Pronto!
 
-Seu ambiente Docker está configurado e os principais serviços estão funcionando. Agora é só codar e brilhar! 💻✨
+Seu ambiente Docker está configurado, os principais serviços estão funcionando e você tem a documentação inicial para interagir com a API. Agora é só codar e brilhar! 💻✨
 
 Lembre-se de verificar os logs dos containers caso encontre algum problema:
 ```bash
