@@ -2,7 +2,7 @@
 SERVER=marketplace-connector
 DATABASE=db-marketplace
 REDIS=redis
-BEAUTIFUL_CERF=beautiful_cerf
+BEAUTIFUL_CERF=mockoon-service
 
 .PHONY: help test start serve queue stop restart cache migration migrationf seed-generate fresh migrate rollback seed key-generate create-users
 

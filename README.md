@@ -90,43 +90,55 @@ docker network create marketplace-network
 
 #### 🐘 PostgreSQL:
 
-Configure e inicie o container do banco de dados PostgreSQL. As credenciais são definidas através de variáveis de ambiente.
+Configure e inicie o container do banco de dados PostgreSQL. As credenciais são definidas através de variáveis de ambiente e os dados são persistidos usando um volume Docker.
 
 ```bash
-docker run -d --name db-marketplace --net marketplace-network -e POSTGRES_PASSWORD=root postgres
+docker run -d --name db-marketplace \
+  --network marketplace-network \
+  -e POSTGRES_PASSWORD=root \
+  -v db_marketplace_data:/var/lib/postgresql/data \
+  postgres:latest
 ```
 * `--name db-marketplace`: Nome do container do banco de dados.
-* `--net marketplace-network`: Conecta o container à rede criada anteriormente.
+* `--network marketplace-network`: Conecta o container à rede criada anteriormente.
 * `-e POSTGRES_PASSWORD=root`: Define a senha do superusuário `postgres` como `root`. **Atenção:** Use senhas seguras em ambientes de produção.
-* `postgres`: Utiliza a imagem oficial do PostgreSQL.
+* `-v db_marketplace_data:/var/lib/postgresql/data`: Cria e utiliza um volume Docker nomeado `db_marketplace_data` para persistir os dados do PostgreSQL. Isso garante que seus dados não sejam perdidos se o container for removido ou recriado. O diretório `/var/lib/postgresql/data` é o local padrão onde o PostgreSQL armazena seus dados.
+* `postgres:latest`: Utiliza a imagem oficial mais recente do PostgreSQL. Para ambientes de produção, considere fixar uma versão específica (ex: `postgres:15`).
 
 ---
 
 ### 🔗 5. Conecte o Backend à Rede
 
-Agora, vamos garantir que o container do backend possa se comunicar com os outros serviços (como o banco de dados) conectando-o à `marketplace-network`.
+Agora, vamos garantir que o container do backend possa se comunicar com os outros serviços (como o banco de dados e Redis) conectando-o à `marketplace-network`. Se o container do backend já foi iniciado e não estava na rede, você pode precisar pará-lo (`docker stop marketplace-connector`), removê-lo (`docker rm marketplace-connector`) e recriá-lo com a flag `--network marketplace-network` ou conectar explicitamente como abaixo.
 
+**Se o container `marketplace-connector` já existe e não está na rede:**
 ```bash
 docker network connect marketplace-network marketplace-connector
+```
+**Idealmente, ao criar o container do backend (passo 2), adicione `--network marketplace-network` ao comando `docker run` para evitar este passo extra.**
+Exemplo revisado do passo 2:
+```bash
+# Exemplo revisado para o passo 2, já incluindo a rede:
+# docker run --name marketplace-connector -d --network marketplace-network -p 8000:8000 -v $HOME/.ssh:/root/.ssh -v $(pwd):/application marketplace-connector
 ```
 
 ---
 
 ### ♨️ 6. Crie o Container do Redis
 
-O Redis é utilizado para caching e gerenciamento de filas. Vamos criar um container para ele e conectá-lo à nossa rede.
+O Redis é utilizado para caching e gerenciamento de filas. Vamos criar um container para ele, conectá-lo à nossa rede e persistir seus dados.
 
 ```bash
 docker run -d --name redis \
   --network marketplace-network \
   -p 6379:6379 \
-  -v redis_data:/data \
+  -v redis_marketplace_data:/data \
   redis:alpine
 ```
 * `--name redis`: Nome do container do Redis.
 * `--network marketplace-network`: Conecta o container à rede da aplicação.
 * `-p 6379:6379`: Mapeia a porta padrão do Redis.
-* `-v redis_data:/data`: Cria um volume chamado `redis_data` para persistir os dados do Redis.
+* `-v redis_marketplace_data:/data`: Cria e utiliza um volume Docker nomeado `redis_marketplace_data` para persistir os dados do Redis.
 * `redis:alpine`: Utiliza a imagem oficial do Redis baseada no Alpine Linux (mais leve).
 
 ---
@@ -140,7 +152,7 @@ docker run -d --name mockoon-service \
   --network marketplace-network \
   --mount type=bind,source=./mocketplace.json,target=/data/mocketplace.json,readonly \
   -p 3000:3000 \
-  mockoon/cli:latest -d /data/mocketplace.json -p 3000
+  mockoon/cli:latest -d /data/mocketplace.json -p 3000 -l 0.0.0.0
 ```
 * `--name mockoon-service`: Nome do container do Mockoon.
 * `--network marketplace-network`: Conecta o container à rede da aplicação.
@@ -149,6 +161,7 @@ docker run -d --name mockoon-service \
 * `mockoon/cli:latest`: Utiliza a imagem oficial da CLI do Mockoon.
 * `-d /data/mocketplace.json`: Informa ao Mockoon qual arquivo de dados (mock) utilizar dentro do container.
 * `-p 3000`: Especifica a porta que o Mockoon deve usar dentro do container.
+* `-l 0.0.0.0`: Faz o Mockoon escutar em todas as interfaces de rede disponíveis dentro do container (IPv4). Isso é importante para que o serviço seja acessível através do mapeamento de portas do Docker.
 
 ---
 
@@ -278,13 +291,14 @@ Este projeto está em constante evolução. Aqui estão alguns pontos que podem 
 * [ ] **Utilizar Docker Compose:**
     * [ ] Criar um arquivo `docker-compose.yml` para orquestrar todos os serviços (backend, banco de dados, Redis, Mockoon).
     * [ ] Simplificar os comandos de `build` e `run` para um único `docker-compose up`.
-    * [ ] Facilitar a configuração de rede e volumes.
+    * [ ] Facilitar a configuração de rede, volumes e dependências entre serviços.
 * [ ] **Gerenciamento de Configuração e Segredos:**
     * [ ] Externalizar configurações sensíveis (como senhas de banco de dados) do `Dockerfile` e comandos `run` para variáveis de ambiente em um arquivo `.env` (usado pelo Docker Compose) ou um sistema de gerenciamento de segredos (como HashiCorp Vault, AWS Secrets Manager, etc.).
     * [ ] Criar arquivos de configuração de exemplo (ex: `.env.example`).
 * [ ] **Otimização do Dockerfile e Imagens:**
     * [ ] Implementar multi-stage builds no `Dockerfile.dev` e criar um `Dockerfile` otimizado para produção (menor tamanho, menos camadas, remoção de dependências de desenvolvimento).
     * [ ] Analisar e reduzir o tamanho final das imagens Docker.
+    * [ ] Fixar versões de imagens base (ex: `php:8.2-fpm-alpine` em vez de `latest`) para maior previsibilidade, especialmente para produção.
 * [ ] **Testes Automatizados:**
     * [ ] Configurar e integrar testes unitários.
     * [ ] Implementar testes de integração para os principais fluxos.
@@ -297,7 +311,7 @@ Este projeto está em constante evolução. Aqui estão alguns pontos que podem 
     * [ ] Adicionar métricas de aplicação e monitoramento de performance (ex: Prometheus, Grafana, New Relic).
 * [ ] **Documentação Detalhada:**
     * [ ] Documentar a arquitetura da aplicação.
-    * [ ] Detalhar as principais APIs e seus endpoints (talvez usando Swagger/OpenAPI).
+    * [ ] Detalhar as principais APIs e seus endpoints (talvez usando Swagger/OpenAPI e gerando documentação automaticamente).
     * [ ] Criar guias para troubleshooting de problemas comuns.
 * [ ] **Segurança:**
     * [ ] Realizar varreduras de vulnerabilidades nas imagens Docker e dependências.
